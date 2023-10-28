@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  eb-catch-all
+
+  SAM Template for eb-catch-all
+
+Resources:
+  MyEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: MyEventBus
+
+  CatchAllWithPrefixLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      LogGroupName: /aws/events/CatchAllWithPrefixLogGroup
+
+  EventRuleCatchAllWithPrefix:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "EventRule to catch all using prefix"
+      EventBusName: !Ref MyEventBus
+      EventPattern:
+        source:
+          - prefix: ""
+      Targets:
+        - Arn: !GetAtt CatchAllWithPrefixLogGroup.Arn
+          Id: "TargetCatchAllWithPrefix"
+
+  CatchAllWithVersionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      LogGroupName: /aws/events/CatchAllWithVersionLogGroup
+
+  EventRuleCatchAllWithVersion:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "EventRule to catch all using version"
+      EventBusName: !Ref MyEventBus
+      EventPattern:
+        version: ["0"]
+      Targets:
+        - Arn: !GetAtt CatchAllWithVersionLogGroup.Arn
+          Id: "TargetCatchAllWithVersion"
+
+  CatchAllWithWildcardLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      LogGroupName: /aws/events/CatchAllWithWildcardLogGroup
+
+  EventRuleCatchAllWithWildcard:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "EventRule to catch all using wildcard"
+      EventBusName: !Ref MyEventBus
+      EventPattern:
+        source:
+          - wildcard: "*"
+      Targets:
+        - Arn: !GetAtt CatchAllWithWildcardLogGroup.Arn
+          Id: "TargetCatchAllWithWildcard"
+
+Outputs:
+  EventBus:
+    Description: "Event Bus"
+    Value: !Ref MyEventBus
+  CatchAllWithPrefixLogGroup:
+    Description: "Log group - Catch all with prefix"
+    Value: !Ref CatchAllWithPrefixLogGroup
+  CatchAllWithVersionLogGroup:
+    Description: "Log group - Catch all with version"
+    Value: !Ref CatchAllWithVersionLogGroup
+  CatchAllWithWildcardLogGroup:
+    Description: "Log group - Catch all with wildcard"
+    Value: !Ref CatchAllWithWildcardLogGroup
